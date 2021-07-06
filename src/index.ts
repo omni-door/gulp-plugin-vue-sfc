@@ -1,13 +1,14 @@
 import through2 from 'through2';
 import PluginError from 'plugin-error';
 import compiler from 'vue-template-compiler';
+import replaceExt from '@utils/replaceExt';
 
 const PLUGIN_NAME = 'gulp-plugin-vue-sfc';
 
 export default function plugin(opts?: {
   compress?: boolean;
 }) {
-  return through2.obj((file, enc, cb) => {
+  return through2.obj((file, enc, next) => {
     if (file.extname !== '.vue') {
       // @ts-ignore
       this.emit('error', new PluginError(PLUGIN_NAME, 'Just support vue sfc file!'));
@@ -18,7 +19,7 @@ export default function plugin(opts?: {
       }
 
       if (file.isBuffer()) {
-        const content = file.contents.toString();
+        const content = file.contents.toString(enc);
         const template = compiler.compile(content, {
           whitespace: opts?.compress ? 'condense' : 'preserve'
         });
@@ -29,11 +30,12 @@ export default function plugin(opts?: {
         }
 
         file.contents = Buffer.from(template.render);
+        file.path = replaceExt(file.path, '.js');
         // @ts-ignore
         this.push(file);
       }
     }
 
-    return cb(null, file);
+    return next(null, file);
   });
 }
