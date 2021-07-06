@@ -1,38 +1,62 @@
+import path from 'path';
 import through2 from 'through2';
 import PluginError from 'plugin-error';
-import compiler from 'vue-template-compiler';
+import { createDefaultCompiler, assemble } from '@vue/component-compiler';
 import replaceExt from '@utils/replaceExt';
+import normalize from '@utils/normalize';
 
-const PLUGIN_NAME = 'gulp-plugin-vue-sfc';
+import type { ScriptOptions, StyleOptions, TemplateOptions } from '@vue/component-compiler';
+
+const applySourceMap = require('vinyl-sourcemaps-apply');
+const PLUGIN_NAME = 'vue-sfc';
 
 export default function plugin(opts?: {
-  compress?: boolean;
+  script?: ScriptOptions;
+  style?: StyleOptions;
+  template?: TemplateOptions;
+  normalizer?: string;
+  styleInjector?: string;
+  styleInjectorSSR?: string;
 }) {
+  const { script, style, template, normalizer, styleInjector, styleInjectorSSR } = opts || {};
+  const vueCompiler = createDefaultCompiler({ script, style, template });
+
   return through2.obj(function (file, enc, next) {
     if (file.extname !== '.vue') {
-      // @ts-ignore
       this.emit('error', new PluginError(PLUGIN_NAME, 'Just support vue sfc file!'));
     } else if (!file.isNull()) {
       if (file.isStream()) {
-        // @ts-ignore
         this.emit('error', new PluginError(PLUGIN_NAME, 'Stream not supported!'));
       }
 
       if (file.isBuffer()) {
-        const content = file.contents.toString(enc);
-        const template = compiler.compile(content, {
-          whitespace: opts?.compress ? 'condense' : 'preserve'
-        });
+        try {
+          const content = file.contents.toString(enc);
+          const localPath = path.relative(file.cwd, file.path);
+          const result = assemble(
+            vueCompiler,
+            localPath,
+            vueCompiler.compileToDescriptor(localPath, content),
+            { normalizer, styleInjector, styleInjectorSSR }
+          );
 
-        if (template.errors?.length) {
-          // @ts-ignore
-          template.errors.forEach(err => this.emit('error', new PluginError(PLUGIN_NAME, err)));
+
+          file.contents = Buffer.from(result.code);
+          file.path = replaceExt(file.path, '.js');
+
+          if (file.sourceMap) {
+            const { map } = result;
+            if (!map.sourcesContent) map.sourcesContent = [content];
+            map.sources = map.sources.map((f: string) =>
+              normalize(path.relative(file.base, path.resolve(file.cwd, f)))
+            );
+            map.file = normalize(file.relative);
+            applySourceMap(file, map);
+          }
+          this.push(file);
+        } catch (err) {
+          this.emit('error', new PluginError(PLUGIN_NAME, err));
         }
-
-        file.contents = Buffer.from(template.render);
-        file.path = replaceExt(file.path, '.js');
-        // @ts-ignore
-        this.push(file);
       }
     }
 

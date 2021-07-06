@@ -12,7 +12,7 @@ module.exports = function (config) {
 
   config.forEach(v => {
     // just keep the reference for third-party libs
-    v.external = ['plugin-error', 'through2', 'vue-template-compiler'];
+    v.external = ['plugin-error', 'through2', 'vue-template-compiler', '@vue/component-compiler', 'vinyl-sourcemaps-apply'];
 
     v.plugins.push(
       alias({
