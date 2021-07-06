@@ -12,7 +12,7 @@ module.exports = function (config) {
 
   config.forEach(v => {
     // just keep the reference for third-party libs
-    v.external = [];
+    v.external = ['plugin-error', 'through2', 'vue-template-compiler'];
 
     v.plugins.push(
       alias({
