@@ -8,7 +8,7 @@ const PLUGIN_NAME = 'gulp-plugin-vue-sfc';
 export default function plugin(opts?: {
   compress?: boolean;
 }) {
-  return through2.obj((file, enc, next) => {
+  return through2.obj(function (file, enc, next) {
     if (file.extname !== '.vue') {
       // @ts-ignore
       this.emit('error', new PluginError(PLUGIN_NAME, 'Just support vue sfc file!'));
