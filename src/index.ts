@@ -11,6 +11,7 @@ const applySourceMap = require('vinyl-sourcemaps-apply');
 const PLUGIN_NAME = 'vue-sfc';
 
 export default function plugin(opts?: {
+  ext?: string;
   script?: ScriptOptions;
   style?: StyleOptions;
   template?: TemplateOptions;
@@ -18,7 +19,7 @@ export default function plugin(opts?: {
   styleInjector?: string;
   styleInjectorSSR?: string;
 }) {
-  const { script, style, template, normalizer, styleInjector, styleInjectorSSR } = opts || {};
+  const { ext, script, style, template, normalizer, styleInjector, styleInjectorSSR } = opts || {};
   const vueCompiler = createDefaultCompiler({ script, style, template });
 
   return through2.obj(function (file, enc, next) {
@@ -42,7 +43,7 @@ export default function plugin(opts?: {
 
 
           file.contents = Buffer.from(result.code);
-          file.path = replaceExt(file.path, '.js');
+          file.path = replaceExt(file.path, ext || '.js');
 
           if (file.sourceMap) {
             const { map } = result;
