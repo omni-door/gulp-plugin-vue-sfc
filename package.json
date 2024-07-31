@@ -28,14 +28,17 @@
     "vue-sfc"
   ],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
+  "peerDependencies": {
+    "@vue/compiler-sfc": ">=3.4.x"
+  },
   "devDependencies": {
-    "@babel/core": "~7.10.0",
-    "@babel/plugin-transform-runtime": "~7.10.0",
-    "@babel/preset-env": "~7.10.0",
-    "@babel/preset-typescript": "~7.10.0",
-    "@babel/runtime-corejs3": "~7.10.0",
-    "@omni-door/cli": "~2.5.0",
+    "@babel/core": "~7.24.9",
+    "@babel/plugin-transform-runtime": "~7.24.7",
+    "@babel/preset-env": "~7.24.8",
+    "@babel/preset-typescript": "~7.24.7",
+    "@babel/runtime-corejs3": "~7.24.8",
+    "@omni-door/cli": "^2.9.6",
     "@rollup/plugin-alias": "~3.1.1",
     "@rollup/plugin-babel": "~5.2.2",
     "@rollup/plugin-commonjs": "~17.0.0",
@@ -47,6 +50,7 @@
     "@types/through2": "^2.0.36",
     "@typescript-eslint/eslint-plugin": "~3.8.0",
     "@typescript-eslint/parser": "~3.8.0",
+    "@vue/compiler-sfc": "^3.4.34",
     "chai": "4.2.0",
     "del": "5.1.0",
     "detect-port": "1.3.0",
@@ -71,15 +75,14 @@
     "ts-loader": "6.2.1",
     "ts-node": "8.6.2",
     "tsconfig-paths": "~3.9.0",
-    "ttypescript": "~1.5.12",
-    "typescript": "~3.9.7",
+    "ttypescript": "~1.5.15",
+    "typescript": "~4.9.5",
     "typescript-transform-paths": "~2.0.3",
     "vue-template-compiler": "^2.6.14",
     "webpack": "~4.46.0"
   },
   "dependencies": {
-    "@vue/component-compiler": "~4.2.4",
-    "plugin-error": "~1.0.1",
+    "plugin-error": "^2.0.1",
     "through2": "~4.0.2",
     "vinyl-sourcemaps-apply": "~0.2.1"
   }
